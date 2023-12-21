@@ -1,0 +1,21 @@
+{
+  "name": "get-from-sheet",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write \"**/*.+(html|css|js|json|yml|ts)\"",
+    "format:check": "prettier --check \"**/*.+(html|css|js|json|yml|ts)\"",
+    "lint": "eslint --ext .js,.ts src/",
+    "test": "npm run format:check && npm run lint"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.71",
+    "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint": "^8.50.0",
+    "prettier": "3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
