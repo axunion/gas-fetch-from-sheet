@@ -1,43 +1,37 @@
 interface Response {
-  status: "done" | "error";
-  data?: unknown[][];
+  result: "done" | "error";
   error?: string;
+  data?: unknown[][];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function doPost(
   e: GoogleAppsScript.Events.DoPost,
 ): GoogleAppsScript.Content.TextOutput {
-  const response: Response = { status: "done" };
+  const response: Response = { result: "done" };
 
   try {
-    const timestamp = Date.now();
-    const parameter = e.parameter;
-
-    Logger.log(`${timestamp} ${JSON.stringify(parameter)}`);
-
-    if (parameterNames.some((name) => !parameter[name])) {
-      throw new Error(`Invalid parameter.`);
-    }
-
+    const date = new Date();
+    const parameter = JSON.parse(e.postData.contents);
     const type = parameter.type;
     const config = configs[type];
 
+    Logger.log(`${date} ${e.postData.contents}`);
+
     if (!config) {
       throw new Error(`Invalid type.`);
-    } else if (timestamp > new Date(config.expiryDate).getTime()) {
+    }
+
+    if (date > new Date(config.dueDate)) {
       throw new Error(`This form has expired.`);
     }
 
     const props = PropertiesService.getScriptProperties().getProperties();
-    const checkCode = props[`CHECK_CODE_${type}`];
     const secret = props.RECAPTCHA_SECRET;
     const sheetId = props[`SPREADSHEET_ID_${type}`];
 
-    if (!checkCode || !secret || !sheetId) {
+    if (!secret || !sheetId) {
       throw new Error(`Invalid script properties.`);
-    } else if (parameter.code !== checkCode) {
-      throw new Error(`Invalid code.`);
     }
 
     const spreadSheet = SpreadsheetApp.openById(sheetId);
@@ -47,7 +41,7 @@ function doPost(
       throw new Error(`Sheet not found.`);
     }
 
-    response.data = filterColumn({
+    response.data = filter({
       data: sheet.getDataRange().getValues().slice(1),
       filterIndex: config.filterIndex,
       filterName: parameter.name,
@@ -55,11 +49,9 @@ function doPost(
     });
   } catch (error) {
     Logger.log(`Error: ${error.message}`);
-    response.status = "error";
+    response.result = "error";
     response.error = error.message;
   }
 
-  return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(
-    ContentService.MimeType.JSON,
-  );
+  return ContentService.createTextOutput(JSON.stringify(response));
 }

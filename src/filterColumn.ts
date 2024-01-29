@@ -1,4 +1,4 @@
-interface FilterColumnParams {
+interface FilterParams {
   data: unknown[][];
   filterIndex: number;
   filterName: string;
@@ -6,7 +6,7 @@ interface FilterColumnParams {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function filterColumn(params: FilterColumnParams) {
+function filter(params: FilterParams) {
   const { data, filterIndex, filterName, targetIndexes } = params;
   const result = [];
 
