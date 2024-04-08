@@ -1,9 +1,9 @@
-interface Config {
+type Config = {
   sheetName: string;
   dueDate: string;
   filterIndex: number;
   targetIndexes: number[];
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const configs: Record<string, Config> = {

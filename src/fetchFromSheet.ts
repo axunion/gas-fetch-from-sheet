@@ -1,8 +1,8 @@
-interface Response {
+type Response = {
   result: "done" | "error";
   error?: string;
   data?: unknown[][];
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function doPost(

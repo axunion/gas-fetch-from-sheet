@@ -1,9 +1,9 @@
-interface FilterParams {
+type FilterParams = {
   data: unknown[][];
   filterIndex: number;
   filterName: string;
   targetIndexes: number[];
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function filter(params: FilterParams) {
