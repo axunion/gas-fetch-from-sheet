@@ -1,7 +1,7 @@
 type Response = {
   result: "done" | "error";
-  error?: string;
   data?: unknown[][];
+  error?: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -11,12 +11,10 @@ function doPost(
   const response: Response = { result: "done" };
 
   try {
-    const date = new Date();
     const parameter = JSON.parse(e.postData.contents);
     const type = parameter.type;
     const config = configs[type];
-
-    Logger.log(`${date} ${e.postData.contents}`);
+    const date = new Date();
 
     if (!config) {
       throw new Error(`Invalid type.`);
@@ -35,7 +33,7 @@ function doPost(
     }
 
     const spreadSheet = SpreadsheetApp.openById(sheetId);
-    const sheet = spreadSheet.getSheetByName(config.sheetName);
+    const sheet = spreadSheet.getSheetByName("Data");
 
     if (!sheet) {
       throw new Error(`Sheet not found.`);
@@ -48,7 +46,6 @@ function doPost(
       targetIndexes: config.targetIndexes,
     });
   } catch (error) {
-    Logger.log(`Error: ${error.message}`);
     response.result = "error";
     response.error = error.message;
   }
