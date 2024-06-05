@@ -5,13 +5,13 @@ type Response = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-function doPost(
-  e: GoogleAppsScript.Events.DoPost,
+function doGet(
+  e: GoogleAppsScript.Events.DoGet,
 ): GoogleAppsScript.Content.TextOutput {
   const response: Response = { result: "done" };
 
   try {
-    const parameter = JSON.parse(e.postData.contents);
+    const parameter = JSON.parse(e.parameter.data);
     const type = parameter.type;
     const config = configs[type];
     const date = new Date();

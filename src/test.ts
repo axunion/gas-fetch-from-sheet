@@ -10,6 +10,6 @@ function _doPost() {
     },
   };
 
-  const result = doPost(testEventData as GoogleAppsScript.Events.DoPost);
+  const result = doGet(testEventData as GoogleAppsScript.Events.DoPost);
   Logger.log(result.getContent());
 }
