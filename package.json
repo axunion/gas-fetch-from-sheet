@@ -6,7 +6,8 @@
     "format": "prettier --write \"**/*.+(html|css|js|json|yml|ts)\"",
     "format:check": "prettier --check \"**/*.+(html|css|js|json|yml|ts)\"",
     "lint": "eslint --ext .js,.ts src/",
-    "test": "npm run format:check && npm run lint"
+    "validate": "npm run format:check && npm run lint",
+    "test": "vitest"
   },
   "author": "",
   "license": "MIT",

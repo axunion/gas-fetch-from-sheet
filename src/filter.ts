@@ -1,20 +1,19 @@
-type FilterParams = {
-  data: unknown[][];
-  filterIndex: number;
-  filterName: string;
-  targetIndexes: number[];
+export type FilterParams = {
+  rows: unknown[][];
+  filterColumnIndex: number;
+  filterValue: string;
+  targetColumnIndexes: number[];
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function filter(params: FilterParams) {
-  const { data, filterIndex, filterName, targetIndexes } = params;
-  const result = [];
+export function filter(params: FilterParams) {
+  const { rows, filterColumnIndex, filterValue, targetColumnIndexes } = params;
+  const filteredRows = [];
 
-  for (const row of data) {
-    if (row[filterIndex] === filterName) {
-      result.push(targetIndexes.map((index) => row[index]));
+  for (const row of rows) {
+    if (row[filterColumnIndex] === filterValue) {
+      filteredRows.push(targetColumnIndexes.map((index) => row[index]));
     }
   }
 
-  return result;
+  return filteredRows;
 }

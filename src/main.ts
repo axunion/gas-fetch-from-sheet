@@ -1,3 +1,6 @@
+import { configs } from "./config";
+import { filter } from "./filter";
+
 type Response = {
   result: "done" | "error";
   data?: unknown[][];
@@ -40,10 +43,10 @@ function doGet(
     }
 
     response.data = filter({
-      data: sheet.getDataRange().getValues().slice(1),
-      filterIndex: config.filterIndex,
-      filterName: parameter.name,
-      targetIndexes: config.targetIndexes,
+      rows: sheet.getDataRange().getValues().slice(1),
+      filterColumnIndex: config.filterIndex,
+      filterValue: parameter.name,
+      targetColumnIndexes: config.targetIndexes,
     });
   } catch (error) {
     response.result = "error";
