@@ -1,5 +1,5 @@
 import { configs } from "./config";
-import { filter } from "./filter";
+import { filter } from "./functions";
 
 type Response = {
   result: "done" | "error";
@@ -8,6 +8,12 @@ type Response = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+function _doGet() {
+  const e = { parameter: { type: "0000", name: "test" } };
+  const result = doGet(e as unknown as GoogleAppsScript.Events.DoGet);
+  Logger.log(result.getContent());
+}
+
 function doGet(
   e: GoogleAppsScript.Events.DoGet,
 ): GoogleAppsScript.Content.TextOutput {

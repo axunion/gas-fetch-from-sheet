@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { filter, FilterParams } from "../src/filter";
+import { filter, FilterParams } from "../src/functions";
 
 describe("filter function", () => {
   it("should filter and return the correct values based on filterColumnIndex and filterValue", () => {
