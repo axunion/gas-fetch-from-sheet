@@ -1,5 +1,5 @@
 import { configs } from "./config";
-import { filter } from "./functions";
+import { filter } from "./filter";
 
 type Response = {
   result: "done" | "error";
