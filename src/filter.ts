@@ -1,11 +1,12 @@
-export type FilterParams = {
+type FilterParams = {
   rows: unknown[][];
   filterColumnIndex: number;
   filterValue: string;
   targetColumnIndexes: number[];
 };
 
-export function filter(params: FilterParams) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function filter(params: FilterParams) {
   const { rows, filterColumnIndex, filterValue, targetColumnIndexes } = params;
   const filteredRows = [];
 
