@@ -1,6 +1,6 @@
 type Response = {
   result: "done" | "error";
-  data?: unknown[][];
+  data?: unknown[];
   error?: string;
 };
 
@@ -47,9 +47,9 @@ function doGet(
 
     response.data = filter({
       rows: sheet.getDataRange().getValues().slice(1),
-      filterColumnIndex: config.filterIndex,
+      filterHeader: config.filterHeader,
       filterValue: parameter.name,
-      targetColumnIndexes: config.targetIndexes,
+      retrieveHeaders: config.retrieveHeaders,
     });
   } catch (error) {
     response.result = "error";
