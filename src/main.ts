@@ -6,7 +6,7 @@ type Response = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function _doGet() {
-  const e = { parameter: { type: "0000", name: "test", value: "", label: "" } };
+  const e = { parameter: { type: "0000", name: "test" } };
   const result = doGet(e as unknown as GoogleAppsScript.Events.DoGet);
   console.log(result);
 }
@@ -17,13 +17,10 @@ function doGet(
   const response: Response = { result: "done" };
 
   try {
-    const parameter = JSON.parse(e.parameter.data);
-    const type = parameter.type;
-    const name = parameter.name;
-    const value = parameter.value;
-    const label = parameter.label;
+    const type = e.parameter.type;
+    const name = e.parameter.name;
 
-    if (!type || !name || !value || !label) {
+    if (!type || !name) {
       throw new Error(`Invalid parameter.`);
     }
 
@@ -35,24 +32,23 @@ function doGet(
     }
 
     const config = getConfig(configSheetId, type);
-    const date = new Date();
 
-    if (date > new Date(config.dueDate)) {
+    if (new Date() > config.dueDate) {
       throw new Error(`This form has expired.`);
     }
 
-    const spreadSheet = SpreadsheetApp.openById(config.sheetId);
-    const sheet = spreadSheet.getSheetByName(type);
+    const ss = SpreadsheetApp.openById(config.sheetId);
+    const sheet = ss.getSheetByName("Data");
 
     if (!sheet) {
       throw new Error(`Sheet not found.`);
     }
 
     response.data = filter({
-      rows: sheet.getDataRange().getValues().slice(1),
-      filterHeader: name,
-      filterValue: value,
-      retrieveHeaders: label,
+      rows: sheet.getDataRange().getValues(),
+      filterHeader: config.filterHeader,
+      filterValue: name,
+      retrieveHeaders: config.retrieveHeaders,
     });
   } catch (error) {
     response.result = "error";
