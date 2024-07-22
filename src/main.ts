@@ -6,9 +6,9 @@ type Response = {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function _doGet() {
-  const e = { parameter: { type: "0000", name: "test" } };
+  const e = { parameter: { type: "0000", name: "test", value: "", label: "" } };
   const result = doGet(e as unknown as GoogleAppsScript.Events.DoGet);
-  Logger.log(result.getContent());
+  console.log(result);
 }
 
 function doGet(
@@ -19,27 +19,30 @@ function doGet(
   try {
     const parameter = JSON.parse(e.parameter.data);
     const type = parameter.type;
-    const config = configs[type];
-    const date = new Date();
+    const name = parameter.name;
+    const value = parameter.value;
+    const label = parameter.label;
 
-    if (!config) {
-      throw new Error(`Invalid type.`);
+    if (!type || !name || !value || !label) {
+      throw new Error(`Invalid parameter.`);
     }
+
+    const properties = PropertiesService.getScriptProperties().getProperties();
+    const configSheetId = properties.SPREADSHEET_ID_CONFIG;
+
+    if (!configSheetId) {
+      throw new Error(`Invalid script properties.`);
+    }
+
+    const config = getConfig(configSheetId, type);
+    const date = new Date();
 
     if (date > new Date(config.dueDate)) {
       throw new Error(`This form has expired.`);
     }
 
-    const props = PropertiesService.getScriptProperties().getProperties();
-    const secret = props.RECAPTCHA_SECRET;
-    const sheetId = props[`SPREADSHEET_ID_${type}`];
-
-    if (!secret || !sheetId) {
-      throw new Error(`Invalid script properties.`);
-    }
-
-    const spreadSheet = SpreadsheetApp.openById(sheetId);
-    const sheet = spreadSheet.getSheetByName("Data");
+    const spreadSheet = SpreadsheetApp.openById(config.sheetId);
+    const sheet = spreadSheet.getSheetByName(type);
 
     if (!sheet) {
       throw new Error(`Sheet not found.`);
@@ -47,9 +50,9 @@ function doGet(
 
     response.data = filter({
       rows: sheet.getDataRange().getValues().slice(1),
-      filterHeader: config.filterHeader,
-      filterValue: parameter.name,
-      retrieveHeaders: config.retrieveHeaders,
+      filterHeader: name,
+      filterValue: value,
+      retrieveHeaders: label,
     });
   } catch (error) {
     response.result = "error";
