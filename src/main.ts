@@ -44,11 +44,14 @@ function doGet(
       throw new Error(`Sheet not found.`);
     }
 
+    const sheetData = sheet.getDataRange().getValues();
+    const headers = sheetData[0];
+
     response.data = filter({
-      rows: sheet.getDataRange().getValues(),
-      filterHeader: config.filterHeader,
+      rows: sheetData.slice(1),
+      columnIndex: getIndexes(headers, [config.filterHeader])[0],
       filterValue: name,
-      retrieveHeaders: config.retrieveHeaders,
+      retrieveIndexes: getIndexes(headers, config.retrieveHeaders),
     });
   } catch (error) {
     response.result = "error";

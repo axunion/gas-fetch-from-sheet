@@ -1,31 +1,33 @@
-type SheetCell = string | number | boolean | Date | null;
+type SheetCell = number | string | boolean | Date | null | undefined;
+
 type FilterParams = {
   rows: SheetCell[][];
-  filterHeader: string;
+  columnIndex: number;
   filterValue: SheetCell;
-  retrieveHeaders: string[];
+  retrieveIndexes: number[];
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function filter(params: FilterParams): SheetCell[][] {
-  const { rows, filterHeader, filterValue, retrieveHeaders } = params;
+  const { rows, columnIndex, filterValue, retrieveIndexes } = params;
 
   if (rows.length === 0) {
     return [];
   }
 
-  const headers = rows[0] as string[];
-  const filterIndex = headers.indexOf(filterHeader);
-  const retrieveIndexes = retrieveHeaders.map((header) =>
-    headers.indexOf(header),
-  );
-
-  if (filterIndex === -1 || retrieveIndexes.includes(-1)) {
+  if (columnIndex < 0 || columnIndex >= rows[0].length) {
+    console.error(`Invalid column index: ${columnIndex}`);
     return [];
   }
 
+  for (const index of retrieveIndexes) {
+    if (index < 0 || index >= rows[0].length) {
+      console.error(`Invalid retrieve index: ${index}`);
+      return [];
+    }
+  }
+
   return rows
-    .slice(1)
-    .filter((row) => row[filterIndex] === filterValue)
+    .filter((row) => row[columnIndex] === filterValue)
     .map((row) => retrieveIndexes.map((index) => row[index]));
 }
