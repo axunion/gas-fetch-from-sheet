@@ -1,5 +1,5 @@
 {
-  "name": "get-from-sheet",
+  "name": "gas-get-from-sheet",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -12,11 +12,12 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@eslint/js": "^8.56.0",
     "@types/google-apps-script": "^1.0.83",
-    "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
     "eslint": "^8.56.0",
-    "prettier": "3.3.1",
-    "typescript": "^5.4.5"
+    "globals": "^15.8.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^7.18.0"
   }
 }
