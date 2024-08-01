@@ -1,4 +1,4 @@
-type Response = {
+type GetResponse = {
   result: "done" | "error";
   data?: unknown[];
   error?: string;
@@ -14,7 +14,7 @@ function _doGet() {
 function doGet(
   e: GoogleAppsScript.Events.DoGet,
 ): GoogleAppsScript.Content.TextOutput {
-  const response: Response = { result: "done" };
+  const response: GetResponse = { result: "done" };
 
   try {
     const type = e.parameter.type;
