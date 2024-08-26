@@ -8,7 +8,7 @@ type GetResponse = {
 function _doGet() {
   const e = { parameter: { type: "0000", name: "test" } };
   const result = doGet(e as unknown as GoogleAppsScript.Events.DoGet);
-  console.log(result);
+  console.log(result.getContent());
 }
 
 function doGet(
