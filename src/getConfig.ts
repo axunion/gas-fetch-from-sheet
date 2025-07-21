@@ -1,5 +1,4 @@
 type Config = {
-	dueDate: Date;
 	sheetId: string;
 	filterHeader: string;
 	retrieveHeaders: string[];
@@ -7,7 +6,7 @@ type Config = {
 
 function _getConfig(): void {
 	const properties = PropertiesService.getScriptProperties().getProperties();
-	const config = getConfig(properties.SPREADSHEET_ID_CONFIG, "0000");
+	const config = getConfig(properties.SPREADSHEET_ID_CONFIG, "");
 	console.log(config);
 }
 
@@ -20,16 +19,15 @@ function getConfig(sheetId: string, type: string): Config {
 	}
 
 	const data = sheet.getDataRange().getValues();
-	const row = data.find((row) => row[0] === type);
+	const item = data.slice(1).find((row) => !row[0] && row[1] === type);
 
-	if (!row) {
-		throw new Error("Config not found.");
+	if (!item) {
+		throw new Error("Specified type not found.");
 	}
 
 	return {
-		dueDate: row[1],
-		sheetId: row[2].trim(),
-		filterHeader: row[3].trim(),
-		retrieveHeaders: row[4].split(",").map((v: string) => v.trim()),
+		sheetId: item[2].trim(),
+		filterHeader: item[3].trim(),
+		retrieveHeaders: item[4].split(",").map((v: string) => v.trim()),
 	};
 }

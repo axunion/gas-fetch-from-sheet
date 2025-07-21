@@ -1,8 +1,14 @@
-type GetResponse = {
-	result: "done" | "error";
-	data?: unknown[];
-	error?: string;
+type GetSuccessResponse = {
+	result: "done";
+	data: unknown[];
 };
+
+type GetErrorResponse = {
+	result: "error";
+	error: string;
+};
+
+type GetResponse = GetSuccessResponse | GetErrorResponse;
 
 function _doGet() {
 	const e = { parameter: { type: "", name: "" } };
@@ -13,7 +19,7 @@ function _doGet() {
 function doGet(
 	e: GoogleAppsScript.Events.DoGet,
 ): GoogleAppsScript.Content.TextOutput {
-	const response: GetResponse = { result: "done" };
+	let response: GetResponse;
 
 	try {
 		const type = e.parameter.type;
@@ -31,11 +37,6 @@ function doGet(
 		}
 
 		const config = getConfig(configSheetId, type);
-
-		if (new Date() > config.dueDate) {
-			throw new Error("This form has expired.");
-		}
-
 		const ss = SpreadsheetApp.openById(config.sheetId);
 		const sheet = ss.getSheetByName("Data");
 
@@ -44,17 +45,19 @@ function doGet(
 		}
 
 		const sheetData = sheet.getDataRange().getValues();
-		const headers = sheetData[0];
+		const row = sheetData[0];
 
-		response.data = filter({
-			rows: sheetData.slice(1),
-			columnIndex: getIndexes(headers, [config.filterHeader])[0],
-			filterValue: name,
-			retrieveIndexes: getIndexes(headers, config.retrieveHeaders),
-		});
+		response = {
+			result: "done",
+			data: filter({
+				rows: sheetData.slice(1),
+				columnIndex: getIndexes({ row, names: [config.filterHeader] })[0],
+				filterValue: name,
+				retrieveIndexes: getIndexes({ row, names: config.retrieveHeaders }),
+			}),
+		};
 	} catch (error) {
-		response.result = "error";
-		response.error = error.message;
+		response = { result: "error", error: error.message };
 	}
 
 	return ContentService.createTextOutput(JSON.stringify(response));
