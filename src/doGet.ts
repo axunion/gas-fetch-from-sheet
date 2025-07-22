@@ -1,6 +1,6 @@
 type GetSuccessResponse = {
 	result: "done";
-	data: unknown[];
+	data: SheetCell[][];
 };
 
 type GetErrorResponse = {
@@ -11,7 +11,7 @@ type GetErrorResponse = {
 type GetResponse = GetSuccessResponse | GetErrorResponse;
 
 function _doGet() {
-	const e = { parameter: { type: "", name: "" } };
+	const e = { parameter: { type: "", value: "" } };
 	const result = doGet(e as unknown as GoogleAppsScript.Events.DoGet);
 	console.log(result.getContent());
 }
@@ -23,9 +23,9 @@ function doGet(
 
 	try {
 		const type = e.parameter.type;
-		const name = e.parameter.name;
+		const value = e.parameter.value;
 
-		if (!type || !name) {
+		if (!type || !value) {
 			throw new Error("Invalid parameter.");
 		}
 
@@ -52,7 +52,7 @@ function doGet(
 			data: filter({
 				rows: sheetData.slice(1),
 				columnIndex: getIndexes({ row, names: [config.filterHeader] })[0],
-				filterValue: name,
+				filterValue: value,
 				retrieveIndexes: getIndexes({ row, names: config.retrieveHeaders }),
 			}),
 		};
