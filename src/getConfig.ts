@@ -1,5 +1,6 @@
 type Config = {
 	sheetId: string;
+	sheetName: string;
 	filterHeader: string;
 	retrieveHeaders: string[];
 };
@@ -27,7 +28,8 @@ function getConfig(sheetId: string, type: string): Config {
 
 	return {
 		sheetId: item[2].trim(),
-		filterHeader: item[3].trim(),
-		retrieveHeaders: item[4].split(",").map((v: string) => v.trim()),
+		sheetName: item[3].trim(),
+		filterHeader: item[4].trim(),
+		retrieveHeaders: item[5].split(",").map((v: string) => v.trim()),
 	};
 }
