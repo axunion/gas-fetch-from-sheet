@@ -49,11 +49,11 @@ function doGet(
 
 		response = {
 			result: "done",
-			data: filter({
+			data: _filter({
 				rows: sheetData.slice(1),
-				columnIndex: getIndexes({ row, names: [config.filterHeader] })[0],
+				columnIndex: _getIndexes({ row, names: [config.filterHeader] })[0],
 				filterValue: value,
-				retrieveIndexes: getIndexes({ row, names: config.retrieveHeaders }),
+				retrieveIndexes: _getIndexes({ row, names: config.retrieveHeaders }),
 			}),
 		};
 	} catch (error) {

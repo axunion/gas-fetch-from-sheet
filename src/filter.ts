@@ -11,7 +11,7 @@ type SheetCell = number | string | boolean | Date | null | undefined;
  * @returns A 2D array of sheet cells containing the filtered and retrieved data. Returns an empty array if input `rows` is empty.
  * @throws Error if `columnIndex` or any `retrieveIndex` is out of bounds for the provided `rows` (when `rows` is not empty).
  */
-function filter(params: {
+function _filter(params: {
 	rows: SheetCell[][];
 	columnIndex: number;
 	filterValue: SheetCell;

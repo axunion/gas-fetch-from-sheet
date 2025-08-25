@@ -8,7 +8,7 @@
  * @returns An array of 0-based indexes corresponding to the input `names`. Returns -1 for names not found in `row`.
  *          Returns an empty array if `row` or `names` is null, undefined, or empty.
  */
-function getIndexes(params: {
+function _getIndexes(params: {
 	row: string[] | null | undefined;
 	names: string[] | null | undefined;
 }): number[] {
