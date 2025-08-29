@@ -1,129 +1,137 @@
-# Gas Fetch From Sheet
+# GAS Fetch From Sheet
 
-A Google Apps Script (GAS) project that provides a web API to fetch and filter data from Google Sheets based on configurable parameters.
+Simple Google Apps Script (GAS) Web API to read, filter, and return selected columns from Google Sheets using a config sheet. Written in TypeScript and compiled to plain GAS code.
 
-## Overview
+## Key Features
 
-This project creates a web API endpoint that can retrieve specific data from Google Sheets by filtering rows based on a column value and returning only the specified columns. The configuration is managed through a separate config sheet, making it flexible and reusable for different data sources.
+- Filter rows by a header value
+- Return only specific columns
+- Central config sheet (no code change for new datasets)
+- Clean JSON response (success or error)
+- TypeScript + Biome for formatting & linting
 
-## Features
+## How It Works
 
-- 🔍 **Filter data** from Google Sheets based on column values
-- 📊 **Retrieve specific columns** from filtered results
-- ⚙️ **Configurable** through a separate config sheet
-- 🌐 **Web API** accessible via HTTP GET requests
-- 🔧 **TypeScript** support with proper type definitions
-- 📝 **Error handling** with structured JSON responses
+1. A GET request calls `doGet`.
+2. The script reads a config row (by `type`).
+3. It opens the target sheet, finds column indexes, filters rows, and returns selected cells.
 
-## API Usage
+## API
 
-### Endpoint
+Endpoint pattern:
 
 ```
 GET https://script.google.com/macros/s/{SCRIPT_ID}/exec?type={TYPE}&value={VALUE}
 ```
 
-### Parameters
+Query parameters:
 
-- `type`: The configuration type to use (defined in the config sheet)
-- `value`: The value to filter by
+| Name | Required | Description |
+|------|----------|-------------|
+| `type` | Yes | Key that selects a config row in the config sheet |
+| `value` | Yes | Exact cell value to match in the filter column |
 
-### Response Format
+Responses:
 
-**Success Response:**
+Success:
 ```json
 {
   "result": "done",
-  "data": [
-    ["column1_value", "column2_value", "..."],
-    ["another_row", "another_value", "..."]
-  ]
+  "data": [["col1", "col2"], ["row2col1", "row2col2"]]
 }
 ```
 
-**Error Response:**
+Error:
 ```json
-{
-  "result": "error",
-  "error": "Error message description"
-}
+{ "result": "error", "error": "Error message" }
 ```
 
-## Setup
+## Configuration
 
-### Prerequisites
+You need two spreadsheets (they can be the same file):
 
-- Google Apps Script project
-- Google Sheets with data to query
-- Google Sheets with configuration data
+1. Config spreadsheet (its ID stored in a Script Property)
+2. Target data spreadsheet(s)
 
-### Script Properties
+In the config spreadsheet create a sheet named `config` with columns:
 
-Set the following script property in your GAS project:
+| expired | type | sheetId | sheetName | filterHeader | retrieveHeaders |
+|---------|------|---------|-----------|--------------|-----------------|
+| (blank or ☑) | key_for_api | target_sheet_id | SheetTabName | HeaderToFilter | colA,colB,colC |
 
-- `SPREADSHEET_ID_CONFIG`: The ID of the spreadsheet containing your configuration
+Rules:
 
-### Configuration Sheet Setup
+- Use an empty `expired` cell for active rows (any non-empty value marks it ignored)
+- `type` must be unique
+- `retrieveHeaders` is a comma list (no spaces or with spaces—both trimmed)
 
-Create a Google Sheet with a "config" tab containing the following columns:
+Script Property to set (AppScript UI: Project Settings > Script properties):
 
-| expired  | type     | sheetId  | sheetName  | filterHeader  | retrieveHeaders |
-|----------|----------|----------|------------|---------------|-----------------|
-| ☐        | type     | sheetId  | sheetName  | filterHeader  | retrieveHeaders |
-| ☐        | your_type| sheet_id | sheet_name | filter_column | column1,column2,column3 |
+| Name | Value |
+|------|-------|
+| `SPREADSHEET_ID_CONFIG` | The config spreadsheet ID |
 
-### Deployment
+## Build & Deploy
 
-1. Clone or copy the source code to your Google Apps Script project
-2. Set up the configuration sheet and script properties
-3. Deploy the script as a web app
-4. Set permissions as needed
+This repo uses TypeScript. Build output is written to `dist/` and includes a copied `appsscript.json`.
 
-## Development
+1. Install deps:
+  ```bash
+  npm install
+  ```
+2. Build TypeScript:
+  ```bash
+  npm run build
+  ```
+3. Open Apps Script editor (if using the online editor) and replace/create files with the JS from `dist/` (one file per compiled `.ts`). If you use clasp, you can instead initialize clasp and push:
+  ```bash
+  # (Optional) if you decide to add clasp later
+  npx clasp create --type webapp --title "GAS Fetch From Sheet"
+  # copy dist files into the clasp project folder then
+  npx clasp push
+  ```
+4. Set the Script Property `SPREADSHEET_ID_CONFIG`.
+5. Deploy: Deploy > New deployment > type Web app.
+6. Set access (e.g. Anyone with the link) as needed.
 
-### Project Structure
+Note: Local execution of `doGet` is not practical because it calls GAS services (SpreadsheetApp, PropertiesService). Testing is done after deployment via HTTP.
+
+## Quick Test
+
+After deploy, call:
+```
+curl "https://script.google.com/macros/s/{SCRIPT_ID}/exec?type=my_type&value=SomeValue"
+```
+
+Expect `{"result":"done", ...}` or an error JSON.
+
+## Project Structure
 
 ```
 src/
-├── appsscript.json    # GAS configuration
-├── doGet.ts          # Main entry point for HTTP GET requests
-├── getConfig.ts      # Configuration retrieval logic
-├── filter.ts         # Data filtering functionality
-└── getIndexes.ts     # Helper for column index mapping
+  appsscript.json   # GAS manifest (copied to dist)
+  doGet.ts          # Entry: validates params, orchestrates flow
+  getConfig.ts      # Reads config sheet
+  filter.ts         # Filters rows + extracts columns
+  getIndexes.ts     # Maps header names to column indexes
 ```
 
-### Scripts
+Build output: `dist/` (created after `npm run build`).
 
-```bash
-# Format code
-npm run format
+## Tech
 
-# Format and write changes
-npm run format:write
+- Google Apps Script V8 runtime
+- TypeScript 5
+- Biome (format + lint)
+- `@types/google-apps-script` for typings
 
-# Lint code
-npm run lint
+Requires Node 18+ (Biome + recent TypeScript).
 
-# Lint and fix issues
-npm run lint:write
+## Error Cases (Examples)
 
-# Check code (format + lint)
-npm run check
-
-# Check and fix all issues
-npm run check:write
-```
-
-### Dependencies
-
-- **Runtime**: Google Apps Script V8 runtime
-- **Development**: TypeScript, Biome (formatter/linter)
-- **Types**: @types/google-apps-script
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run `npm run check:write` to format and lint
-5. Submit a pull request
+| Situation | Error message |
+|-----------|---------------|
+| Missing `type` or `value` | `Invalid parameter.` |
+| Missing script property | `Invalid script properties.` |
+| Config row not found | `Specified type not found.` |
+| Target sheet missing | `Sheet not found.` |
