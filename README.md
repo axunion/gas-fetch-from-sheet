@@ -1,6 +1,6 @@
 # GAS Fetch From Sheet
 
-Simple Google Apps Script (GAS) Web API to read, filter, and return selected columns from Google Sheets using a config sheet. Written in TypeScript and compiled to plain GAS code.
+Simple Google Apps Script (GAS) web endpoint that reads Google Sheets using a config sheet. TypeScript source, deployed with `clasp`.
 
 ## Key Features
 
@@ -71,39 +71,71 @@ Script Property to set (AppScript UI: Project Settings > Script properties):
 |------|-------|
 | `SPREADSHEET_ID_CONFIG` | The config spreadsheet ID |
 
-## Build & Deploy
+## Build & Deploy (with clasp)
 
-This repo uses TypeScript. Build output is written to `dist/` and includes a copied `appsscript.json`.
+Prerequisites:
 
-1. Install deps:
-  ```bash
-  npm install
-  ```
-2. Build TypeScript:
-  ```bash
-  npm run build
-  ```
-3. Open Apps Script editor (if using the online editor) and replace/create files with the JS from `dist/` (one file per compiled `.ts`). If you use clasp, you can instead initialize clasp and push:
-  ```bash
-  # (Optional) if you decide to add clasp later
-  npx clasp create --type webapp --title "GAS Fetch From Sheet"
-  # copy dist files into the clasp project folder then
-  npx clasp push
-  ```
-4. Set the Script Property `SPREADSHEET_ID_CONFIG`.
-5. Deploy: Deploy > New deployment > type Web app.
-6. Set access (e.g. Anyone with the link) as needed.
+- Node 18+
+- Google account
+- `clasp` (installed automatically via `npx` in the steps below)
 
-Note: Local execution of `doGet` is not practical because it calls GAS services (SpreadsheetApp, PropertiesService). Testing is done after deployment via HTTP.
+Steps (new project):
+
+```bash
+npm install         # install deps (includes types & biome)
+npm run build       # compile to dist/
+npx clasp login     # browser auth (first time only)
+npx clasp create --type webapp --title "GAS Fetch From Sheet" --rootDir dist
+```
+
+The previous command creates `.clasp.json` pointing to the Apps Script project and sets `rootDir` to `dist` so only build output is pushed.
+
+Now push code (after every build):
+
+```bash
+npm run build
+npx clasp push
+```
+
+Create a version & deploy as Web App (first time):
+
+```bash
+npx clasp deploy --description "v1 web" --web-app
+```
+
+If `--web-app` is not available in your `clasp` version, do this instead:
+1. `npx clasp version "v1"`
+2. Open the Apps Script UI > Deploy > New deployment > Type: Web app
+3. Set access level (e.g. Anyone with the link)
+
+Subsequent updates:
+
+```bash
+npm run build
+npx clasp push
+npx clasp version "update"
+npx clasp deploy --description "update"  # or update deployment in UI
+```
+
+Set Script Property (once): Apps Script UI > Project Settings > Script properties:
+
+| Name | Value |
+|------|-------|
+| `SPREADSHEET_ID_CONFIG` | Your config sheet ID |
+
+After deploy, note the Web App URL (`.../exec`).
+
+Alternative (without clasp): Manually copy files from `dist/` into the Apps Script editor; then deploy via UI.
+
+Note: Local run of `doGet` is not practical because it calls GAS services. Test via HTTP after deploy.
 
 ## Quick Test
 
-After deploy, call:
-```
+```bash
 curl "https://script.google.com/macros/s/{SCRIPT_ID}/exec?type=my_type&value=SomeValue"
 ```
 
-Expect `{"result":"done", ...}` or an error JSON.
+Expect JSON with `result` = `done` or `error`.
 
 ## Project Structure
 
