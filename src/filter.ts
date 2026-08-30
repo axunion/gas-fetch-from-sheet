@@ -19,11 +19,13 @@ function _filter(params: {
 }): SheetCell[][] {
 	const { rows, columnIndex, filterValue, retrieveIndexes } = params;
 
-	if (!rows || rows.length === 0) {
+	const [firstRow] = rows;
+
+	if (!firstRow) {
 		return [];
 	}
 
-	const rowLength = rows[0].length;
+	const rowLength = firstRow.length;
 
 	if (columnIndex < 0 || columnIndex >= rowLength) {
 		throw new Error(

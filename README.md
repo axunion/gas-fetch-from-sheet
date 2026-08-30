@@ -76,16 +76,18 @@ Script Property to set (AppScript UI: Project Settings > Script properties):
 Prerequisites:
 
 - Node 18+
+- pnpm
 - Google account
-- `clasp` (installed automatically via `npx` in the steps below)
+- `clasp` (installed as shown below)
 
 Steps (new project):
 
 ```bash
-npm install         # install deps (includes types & biome)
-npm run build       # compile to dist/
-npx clasp login     # browser auth (first time only)
-npx clasp create --type webapp --title "GAS Fetch From Sheet" --rootDir dist
+pnpm install                # install deps (includes types & biome)
+pnpm build                  # compile to dist/
+pnpm add -g @google/clasp   # install clasp (if not installed)
+clasp login                 # browser auth (first time only)
+clasp create --type webapp --title "GAS Fetch From Sheet" --rootDir dist
 ```
 
 The previous command creates `.clasp.json` pointing to the Apps Script project and sets `rootDir` to `dist` so only build output is pushed.
@@ -93,28 +95,28 @@ The previous command creates `.clasp.json` pointing to the Apps Script project a
 Now push code (after every build):
 
 ```bash
-npm run build
-npx clasp push
+pnpm build
+clasp push
 ```
 
 Create a version & deploy as Web App (first time):
 
 ```bash
-npx clasp deploy --description "v1 web" --web-app
+clasp deploy --description "v1 web" --web-app
 ```
 
 If `--web-app` is not available in your `clasp` version, do this instead:
-1. `npx clasp version "v1"`
+1. `clasp version "v1"`
 2. Open the Apps Script UI > Deploy > New deployment > Type: Web app
 3. Set access level (e.g. Anyone with the link)
 
 Subsequent updates:
 
 ```bash
-npm run build
-npx clasp push
-npx clasp version "update"
-npx clasp deploy --description "update"  # or update deployment in UI
+pnpm build
+clasp push
+clasp version "update"
+clasp deploy --description "update"  # or update deployment in UI
 ```
 
 Set Script Property (once): Apps Script UI > Project Settings > Script properties:
@@ -148,16 +150,16 @@ src/
   getIndexes.ts     # Maps header names to column indexes
 ```
 
-Build output: `dist/` (created after `npm run build`).
+Build output: `dist/` (created after `pnpm build`).
 
 ## Tech
 
 - Google Apps Script V8 runtime
-- TypeScript 5
+- TypeScript 7
 - Biome (format + lint)
 - `@types/google-apps-script` for typings
 
-Requires Node 18+ (Biome + recent TypeScript).
+Requires Node 18+ and pnpm.
 
 ## Error Cases (Examples)
 

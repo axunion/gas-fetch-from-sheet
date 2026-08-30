@@ -7,7 +7,13 @@ type Config = {
 
 function _getConfig(): void {
 	const properties = PropertiesService.getScriptProperties().getProperties();
-	const config = getConfig(properties.SPREADSHEET_ID_CONFIG, "");
+	const configSheetId = properties.SPREADSHEET_ID_CONFIG;
+
+	if (!configSheetId) {
+		throw new Error("Invalid script properties.");
+	}
+
+	const config = getConfig(configSheetId, "");
 	console.log(config);
 }
 

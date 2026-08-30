@@ -45,20 +45,29 @@ function doGet(
 		}
 
 		const sheetData = sheet.getDataRange().getValues();
-		const row = sheetData[0];
+		const [row] = sheetData;
+
+		if (!row) {
+			throw new Error("Sheet is empty.");
+		}
 
 		response = {
 			result: "done",
 			data: _filter({
 				rows: sheetData.slice(1),
-				columnIndex: _getIndexes({ row, names: [config.filterHeader] })[0],
+				columnIndex: getIndexes({ row, names: [config.filterHeader] })[0] ?? -1,
 				filterValue: value,
-				retrieveIndexes: _getIndexes({ row, names: config.retrieveHeaders }),
+				retrieveIndexes: getIndexes({ row, names: config.retrieveHeaders }),
 			}),
 		};
 	} catch (error) {
-		response = { result: "error", error: error.message };
+		response = {
+			result: "error",
+			error: error instanceof Error ? error.message : String(error),
+		};
 	}
 
-	return ContentService.createTextOutput(JSON.stringify(response));
+	return ContentService.createTextOutput(JSON.stringify(response)).setMimeType(
+		ContentService.MimeType.JSON,
+	);
 }
